@@ -27,6 +27,7 @@
 #include "LCDdriver.h"
 #include "graphlib.h"
 #include "tetris.h"
+#include "jxglib_adapter.h"
 
 // 入力ボタンのビット定義
 #define GPIO_KEYUP 0
@@ -220,7 +221,7 @@ unsigned char startkeycheck(unsigned short n){
 	uint64_t t=to_us_since_boot(get_absolute_time())%16667;
 	while(n--){
 		sleep_us(16667-t);
-		if(!gpio_get(GPIO_KEYSTART)){
+		if(!gpio_get(GPIO_KEYSTART) || jxglib_keycheck() == KEYSTART){
 			return 1;
 		}
 		t=0;
@@ -437,7 +438,7 @@ void moveblock(void){
 	movedflag=0;
 
 	// ボタンチェック
-	k=~gpio_get_all() & KEYSMASK;
+	k=(~gpio_get_all() & KEYSMASK) | jxglib_keycheck();
 	if(keyold!=KEYUP && k==KEYUP){	//上ボタン（回転）
 		if(blockangle<falling.rot){ //軸中心に90度回転
 			tempblock.x1=-falling.y1;
@@ -842,6 +843,8 @@ int main(void){
 	gpio_init(LCD_RESET);
 	gpio_put(LCD_RESET, 1);
 	gpio_set_dir(LCD_RESET, GPIO_OUT);
+
+	jxglib_init();
 
 	init_graphic(); //液晶利用開始
 	LCD_WriteComm(0x37); //画面中央にするためスクロール設定
