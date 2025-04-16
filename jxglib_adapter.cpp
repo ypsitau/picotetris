@@ -13,36 +13,36 @@ extern "C" void jxglib_init()
 
 extern "C" uint16_t jxglib_keycheck()
 {
-	int GPIO_KEYUP = 0;
-	int GPIO_KEYLEFT = 1;
-	int GPIO_KEYRIGHT = 2;
-	int GPIO_KEYDOWN = 3;
-	int GPIO_KEYSTART = 4;
-	int GPIO_KEYFIRE = 5;
-	uint16_t KEYUP = (1 << GPIO_KEYUP);
-	uint16_t KEYLEFT = (1 << GPIO_KEYLEFT);
-	uint16_t KEYRIGHT = (1 << GPIO_KEYRIGHT);
-	uint16_t KEYDOWN = (1 << GPIO_KEYDOWN);
-	uint16_t KEYSTART = (1 << GPIO_KEYSTART);
-	uint16_t KEYFIRE = (1 << GPIO_KEYFIRE);
+	static const int GPIO_KEYUP = 0;
+	static const int GPIO_KEYLEFT = 1;
+	static const int GPIO_KEYRIGHT = 2;
+	static const int GPIO_KEYDOWN = 3;
+	static const int GPIO_KEYSTART = 4;
+	static const int GPIO_KEYFIRE = 5;
+	static const uint16_t KEYUP = (1 << GPIO_KEYUP);
+	static const uint16_t KEYLEFT = (1 << GPIO_KEYLEFT);
+	static const uint16_t KEYRIGHT = (1 << GPIO_KEYRIGHT);
+	static const uint16_t KEYDOWN = (1 << GPIO_KEYDOWN);
+	static const uint16_t KEYSTART = (1 << GPIO_KEYSTART);
+	static const uint16_t KEYFIRE = (1 << GPIO_KEYFIRE);
 	Tickable::Tick();
-	USBHost::GamePad& gamePad = USBHost::GetGamePad();
-	uint32_t hat = gamePad.GetReportValue(0x00010039);
-	uint32_t stickX = gamePad.GetReportValue(0x00010030);		// X
-	uint32_t stickY = gamePad.GetReportValue(0x00010031);		// Y
-	uint32_t stickZ = gamePad.GetReportValue(0x00010032);		// Z
-	uint32_t stickRz = gamePad.GetReportValue(0x00010035);		// Rz
-	uint32_t buttonStart = gamePad.GetReportValue(0x0009000c);	// START 
-	uint32_t buttonX = gamePad.GetReportValue(0x00090001);		// X
-	uint32_t buttonY = gamePad.GetReportValue(0x00090002);		// Y
-	uint32_t buttonA = gamePad.GetReportValue(0x00090003);		// A
-	uint32_t buttonB = gamePad.GetReportValue(0x00090004);		// B
+	USBHost::GamePad& gamePad = USBHost::FindGamePad();
+	uint32_t hat = gamePad.Get_HatSwitch();
+	uint32_t lStickHorz = gamePad.Get_LStickHorz();
+	uint32_t lStickVert = gamePad.Get_LStickVert();
+	uint32_t rStickHorz = gamePad.Get_RStickHorz();
+	uint32_t rStickVert = gamePad.Get_RStickVert();
+	uint32_t buttonStart = gamePad.Get_ButtonSTART(); 
+	uint32_t buttonX = gamePad.Get_ButtonX();
+	uint32_t buttonY = gamePad.Get_ButtonY();
+	uint32_t buttonA = gamePad.Get_ButtonA();
+	uint32_t buttonB = gamePad.Get_ButtonB();
 	uint16_t rtn = 0;
-	if (hat == 0 || stickY < 0x40 || stickZ < 0x40) rtn |= KEYUP;
-	if (hat == 2 || stickX > 0xc0 || stickRz > 0xc0) rtn |= KEYRIGHT;
-	if (hat == 4 || stickY > 0xc0 || stickZ > 0xc0) rtn |= KEYDOWN;
-	if (hat == 6 || stickX < 0x40 || stickRz < 0x40) rtn |= KEYLEFT;
+	if (hat == 0 || lStickVert < 0x40 || rStickVert < 0x40) rtn |= KEYUP;
+	if (hat == 2 || lStickHorz > 0xc0 || rStickHorz > 0xc0) rtn |= KEYRIGHT;
+	if (hat == 4 || lStickVert > 0xc0 || rStickVert > 0xc0) rtn |= KEYDOWN;
+	if (hat == 6 || lStickHorz < 0x40 || rStickHorz < 0x40) rtn |= KEYLEFT;
 	if (buttonStart) rtn |= KEYSTART;
-	if (buttonX || buttonY || buttonA || buttonB) rtn |= KEYUP;
+	if (buttonX || buttonY || buttonA || buttonB) rtn |= KEYUP; // KEYFIRE;
 	return rtn;
 }
