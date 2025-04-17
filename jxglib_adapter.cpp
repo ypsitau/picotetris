@@ -26,7 +26,7 @@ extern "C" uint16_t jxglib_keycheck()
 	static const uint16_t KEYSTART = (1 << GPIO_KEYSTART);
 	static const uint16_t KEYFIRE = (1 << GPIO_KEYFIRE);
 	Tickable::Tick();
-	USBHost::GamePad& gamePad = USBHost::FindGamePad();
+	USBHost::GamePad gamePad(USBHost::FindGenericHID(0x00010005));
 	uint32_t hat = gamePad.Get_HatSwitch();
 	uint32_t lStickHorz = gamePad.Get_LStickHorz();
 	uint32_t lStickVert = gamePad.Get_LStickVert();
@@ -43,6 +43,6 @@ extern "C" uint16_t jxglib_keycheck()
 	if (hat == 4 || lStickVert > 0xc0 || rStickVert > 0xc0) rtn |= KEYDOWN;
 	if (hat == 6 || lStickHorz < 0x40 || rStickHorz < 0x40) rtn |= KEYLEFT;
 	if (buttonStart) rtn |= KEYSTART;
-	if (buttonX || buttonY || buttonA || buttonB) rtn |= KEYUP; // KEYFIRE;
+	if (buttonX || buttonY || buttonA || buttonB) rtn |= KEYUP;
 	return rtn;
 }
