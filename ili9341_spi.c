@@ -3,6 +3,8 @@
 #include "hardware/spi.h"
 #include "LCDdriver.h"
 
+#define USE_ST7789
+
 static inline void lcd_cs_lo() {
     asm volatile("nop \n nop \n nop");
     gpio_put(LCD_CS, 0);
@@ -123,7 +125,12 @@ void LCD_Init()
 	LCD_WriteData(0x86);
 	LCD_WriteComm(0x36);
 #if LCD_ALIGNMENT == VERTICAL
+#if defined(USE_ST7789)
+	LCD_WriteData(0x20);
+	LCD_WriteComm(0x21);
+#else
 	LCD_WriteData(0x48);
+#endif
 #elif LCD_ALIGNMENT == HORIZONTAL
 	LCD_WriteData(0x0C);
 #endif
