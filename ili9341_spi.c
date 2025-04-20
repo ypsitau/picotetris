@@ -3,7 +3,7 @@
 #include "hardware/spi.h"
 #include "LCDdriver.h"
 
-#define USE_ST7789
+//#define USE_ST7789
 
 static inline void lcd_cs_lo() {
     asm volatile("nop \n nop \n nop");
