@@ -4,10 +4,10 @@
 
 using namespace jxglib;
 
+USBHost::GamePad gamePad;
+
 extern "C" void jxglib_init()
 {
-	GPIO16.set_function_UART0_TX();
-	GPIO17.set_function_UART0_RX();
 	USBHost::Initialize();
 }
 
@@ -26,23 +26,23 @@ extern "C" uint16_t jxglib_keycheck()
 	static const uint16_t KEYSTART = (1 << GPIO_KEYSTART);
 	static const uint16_t KEYFIRE = (1 << GPIO_KEYFIRE);
 	Tickable::Tick();
-	USBHost::GamePad gamePad(USBHost::FindGenericHID(0x00010005));
 	uint32_t hat = gamePad.Get_HatSwitch();
-	uint32_t lStickHorz = gamePad.Get_LStickHorz();
-	uint32_t lStickVert = gamePad.Get_LStickVert();
-	uint32_t rStickHorz = gamePad.Get_RStickHorz();
-	uint32_t rStickVert = gamePad.Get_RStickVert();
+	float lStickHorz = gamePad.Get_LStickHorz();
+	float lStickVert = gamePad.Get_LStickVert();
+	float rStickHorz = gamePad.Get_RStickHorz();
+	float rStickVert = gamePad.Get_RStickVert();
 	uint32_t buttonStart = gamePad.Get_ButtonSTART(); 
 	uint32_t buttonX = gamePad.Get_ButtonX();
 	uint32_t buttonY = gamePad.Get_ButtonY();
 	uint32_t buttonA = gamePad.Get_ButtonA();
 	uint32_t buttonB = gamePad.Get_ButtonB();
 	uint16_t rtn = 0;
-	if (hat == 0 || lStickVert < 0x40 || rStickVert < 0x40) rtn |= KEYUP;
-	if (hat == 2 || lStickHorz > 0xc0 || rStickHorz > 0xc0) rtn |= KEYRIGHT;
-	if (hat == 4 || lStickVert > 0xc0 || rStickVert > 0xc0) rtn |= KEYDOWN;
-	if (hat == 6 || lStickHorz < 0x40 || rStickHorz < 0x40) rtn |= KEYLEFT;
+	if (hat == 0 || lStickVert < -.5 || rStickVert < -.5) rtn |= KEYUP;
+	if (hat == 2 || lStickHorz > .5 || rStickHorz > .5) rtn |= KEYRIGHT;
+	if (hat == 4 || lStickVert > .5 || rStickVert > .5) rtn |= KEYDOWN;
+	if (hat == 6 || lStickHorz < -.5 || rStickHorz < -.5) rtn |= KEYLEFT;
 	if (buttonStart) rtn |= KEYSTART;
-	if (buttonX || buttonY || buttonA || buttonB) rtn |= KEYUP;
+	if (buttonA) rtn |= KEYDOWN;
+	if (buttonX || buttonY || buttonB) rtn |= KEYUP;
 	return rtn;
 }
