@@ -1,5 +1,5 @@
 // jxglib Adapter
-#include "jxglib/USBHost.h"
+#include "jxglib/USBHost/HID.h"
 #include "jxglib_adapter.h"
 
 using namespace jxglib;
